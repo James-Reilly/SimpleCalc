@@ -1,14 +1,15 @@
 package com.example.jamesreilly.simplecalc;
 
-import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 /**
  * Created by jamesreilly on 9/27/14.
  */
 public class shuntingYard {
     private enum Precedence{
-        openParen(1), closeParen(1), plus(2), minus(3), divide(4), times(5), operand(6);
+        openParen(0), closeParen(1), plus(2), minus(2), divide(3), times(3), end(5), operand(6);
 
         private int index;
         Precedence(int index){
@@ -20,30 +21,77 @@ public class shuntingYard {
 
     }
 
-    public Precedence getToken(char s){
+    public static Precedence getToken(char s){
         switch(s){
             case '('    : return Precedence.openParen;
             case ')'    : return Precedence.closeParen;
             case '+'    : return Precedence.plus;
             case '-'    : return Precedence.minus;
             case '*'    : return Precedence.times;
+            case '/'    : return Precedence.divide;
+            case ' '    : return Precedence.end;
             default     : return Precedence.operand;
+
         }
     }
-    public String prefix(String infix){
-        String[] st = infix.split("\\s");
-        String prefix = "";
-        Deque<String> stack = new LinkedList<String>();
-        Deque<String> output = new LinkedList<String>();
+
+
+    public static LinkedList<String> prefix(String infix){
+
+        Stack<String> operator = new Stack<String>();
+        LinkedList<String> post = new LinkedList<String>();
+        operator.push(" ");
         Precedence token;
-        for(int i = st.length - 1; i <= 0; i--){
-            token = getToken(infix.charAt(i));
-            if (token == Precedence.operand){
+        StringTokenizer st = new StringTokenizer(infix);
+        Boolean empty = getToken(operator.peek().charAt(0)).getIndex() != Precedence.end.getIndex();
+
+        while(st.hasMoreTokens()){
+            String currentSt = st.nextToken();
+            Character curChar = currentSt.charAt(0);
+            token = getToken(curChar);
+            if(token == Precedence.operand){
+                post.add(currentSt);
 
             }
+            else if(token.getIndex() == Precedence.closeParen.getIndex()){
+                while(getToken(operator.peek().charAt(0)).getIndex() != Precedence.openParen.getIndex()){
+                    if(empty){
+                        post.clear();
+                        post.add("ERROR");
+                        return post;
+                    }
+                    else{
+                        post.add(operator.pop());
+
+                    }
+                }
+
+                operator.pop();
+            }
+            else if (token.getIndex() == Precedence.openParen.getIndex()){
+                operator.push(currentSt);
+
+            }
+            else{
+
+                    while ((token.getIndex() <= getToken(operator.peek().charAt(0)).getIndex()) && ! getToken((operator.peek().charAt(0))).equals(Precedence.end) ){
+                        post.add(operator.pop());
+
+                    }
+                    operator.push(currentSt);
+
+            }
+
         }
-        return prefix;
+        while(getToken(operator.peek().charAt(0)).getIndex() < Precedence.end.getIndex()){
+            post.add(operator.pop());
+
+        }
+
+        return post;
+
     }
+
 
 
 }

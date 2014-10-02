@@ -1,5 +1,6 @@
 package com.example.jamesreilly.simplecalc;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,15 +15,16 @@ import java.util.Stack;
 public class Calculator extends Activity {
 
     private String displayFunction = "";
-    private LinkedList<String> functionList = new LinkedList<String>();
-    private Stack<String> stackify = new Stack<String>();
     private String myInt = "";
-    private String previousState = "";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculator);
+        ActionBar actionBar = getActionBar();
+        actionBar.hide();
     }
 
 
@@ -33,6 +35,10 @@ public class Calculator extends Activity {
         return true;
     }
     public void onButtonClick(View v) {
+        // previously invisible view
+
+
+
         switch (v.getId()) {
             case R.id.imageButton0:
                 myInt += "0";
@@ -75,37 +81,79 @@ public class Calculator extends Activity {
                 displayFunction += "9";
                 break;
             case R.id.imageButtonminus:
-                functionList.addFirst("-");
+                myInt += " - ";
                 displayFunction += "-";
                 break;
             case R.id.imageButtonMult:
-                functionList.addFirst("*");
+                myInt += " * ";
                 displayFunction += "x";
                 break;
             case R.id.imageButtonDiv:
-                functionList.addFirst("/");
+                myInt += " / ";
                 displayFunction += "/";
                 break;
             case R.id.imageButtonplus:
-                functionList.addFirst("+");
+                myInt += " + ";
                 displayFunction += "+";
+
+                break;
+            case R.id.imageButtonOpen:
+                myInt += " ( ";
+                displayFunction +="(";
+                break;
+            case R.id.imageButtonClose:
+                myInt += " ) ";
+                displayFunction +=")";
                 break;
             case R.id.imageButtoneq:
-                String prefix = "";
-                for(int i = 0; i < functionList.size(); i++){
-                    prefix += functionList.get(i) + " ";
+                String operators = "+ - * /";
+                String strAnswer = "";
+                LinkedList<String> postfix = shuntingYard.prefix(myInt);
+                Stack<Float> answer= new Stack<Float>();
+                try {
+                    while (!postfix.isEmpty()) {
+                        String current = postfix.remove();
+                        if (operators.contains(current)) {
+                            Float right = answer.pop();
+                            Float left = answer.pop();
+                            switch (current.charAt(0)) {
+                                case '+':
+                                    answer.push(left + right);
+                                    break;
+                                case '-':
+                                    answer.push(left - right);
+                                    break;
+                                case '*':
+                                    answer.push(left * right);
+                                    break;
+                                case '/':
+                                    answer.push(left / right);
+                                    break;
+                            }
+                        } else {
+                            answer.push(Float.parseFloat(current));
+                        }
+                    }
+                    strAnswer = answer.pop().toString();
+                } catch(Exception e){
+                    strAnswer = "ERROR";
                 }
-                System.out.println("prefix expression: " + prefix);
-                Expression e = Parse.parseString(prefix);
-                Integer result = e.evaluate();
-                System.out.println("Infix expression: " + e.emit());
-                displayFunction = result.toString();
-                functionList.clear();
-                functionList.addLast(result.toString());
+                finally {
+                    displayFunction=strAnswer;
+                    if (strAnswer.equals("ERROR")){
+                        myInt = "";
+                    }
+                    else{
+                        myInt = strAnswer;
+                    }
+
+                }
+
                 break;
             case R.id.imageButtonClr:
-                functionList.clear();
                 displayFunction = "";
+                myInt="";
+
                 break;
 
         }
@@ -113,6 +161,8 @@ public class Calculator extends Activity {
                 findViewById(R.id.textView);
         myTextView.setText(displayFunction);
     }
+
+
 
 
 
