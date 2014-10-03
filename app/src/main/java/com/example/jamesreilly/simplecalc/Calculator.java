@@ -16,6 +16,9 @@ public class Calculator extends Activity {
 
     private String displayFunction = "";
     private String myInt = "";
+    private String operators = "+ - * / ^";
+    private String strAnswer = "";
+
 
 
 
@@ -81,7 +84,26 @@ public class Calculator extends Activity {
                 displayFunction += "9";
                 break;
             case R.id.imageButtonminus:
-                myInt += " - ";
+
+                if(displayFunction.isEmpty()){
+                    myInt += "-";
+                }
+                else {
+                    boolean p = displayFunction.charAt(displayFunction.length() - 1) == '+';
+                    System.out.println(p);
+                    boolean m = displayFunction.charAt(displayFunction.length() - 1) == '-';
+                    boolean d = displayFunction.charAt(displayFunction.length() - 1) == '/';
+                    boolean t = displayFunction.charAt(displayFunction.length() - 1) == 'x';
+                    boolean pw = displayFunction.charAt(displayFunction.length() - 1) == '^';
+                    if (p || m || d || t || pw){
+                        myInt += "-";
+                    }
+                    else{
+                        myInt += " - ";
+                    }
+                }
+
+
                 displayFunction += "-";
                 break;
             case R.id.imageButtonMult:
@@ -105,9 +127,17 @@ public class Calculator extends Activity {
                 myInt += " ) ";
                 displayFunction +=")";
                 break;
+            case R.id.imageButtonPow:
+                myInt += " ^ ";
+                displayFunction +="^";
+                break;
+            case R.id.imageButtonTBA:
+                myInt+= ".";
+                displayFunction+=".";
+                break;
             case R.id.imageButtoneq:
-                String operators = "+ - * /";
-                String strAnswer = "";
+
+
                 LinkedList<String> postfix = shuntingYard.prefix(myInt);
                 Stack<Float> answer= new Stack<Float>();
                 try {
@@ -129,6 +159,9 @@ public class Calculator extends Activity {
                                 case '/':
                                     answer.push(left / right);
                                     break;
+                                case '^':
+                                    answer.push((float) Math.pow(left,right));
+
                             }
                         } else {
                             answer.push(Float.parseFloat(current));
@@ -139,11 +172,19 @@ public class Calculator extends Activity {
                     strAnswer = "ERROR";
                 }
                 finally {
+                    //Floating Point Check
+                    int decimal = strAnswer.indexOf(".");
+                    if (strAnswer.charAt(decimal + 1) == '0'){
+                        if(decimal + 1 == strAnswer.length()-1){
+                            strAnswer = strAnswer.substring(0,decimal);
+                        }
+                    }
                     displayFunction=strAnswer;
                     if (strAnswer.equals("ERROR")){
                         myInt = "";
                     }
                     else{
+
                         myInt = strAnswer;
                     }
 

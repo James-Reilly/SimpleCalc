@@ -42,8 +42,8 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageButtonSqrt"
-                android:background="@drawable/sqrt"
+                android:id="@+id/imageButtonPow"
+                android:background="@drawable/squared"
                 android:layout_margin="5dp"
                 android:onClick="onButtonClick" />
             <ImageButton

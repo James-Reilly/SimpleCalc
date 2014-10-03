@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  */
 public class shuntingYard {
     private enum Precedence{
-        openParen(0), closeParen(1), plus(2), minus(2), divide(3), times(3), end(5), operand(6);
+        openParen(0), closeParen(1), plus(2), minus(2), divide(3), times(3),power(4), end(5), operand(6);
 
         private int index;
         Precedence(int index){
@@ -29,6 +29,7 @@ public class shuntingYard {
             case '-'    : return Precedence.minus;
             case '*'    : return Precedence.times;
             case '/'    : return Precedence.divide;
+            case '^'    : return Precedence.power;
             case ' '    : return Precedence.end;
             default     : return Precedence.operand;
 
@@ -87,7 +88,7 @@ public class shuntingYard {
             post.add(operator.pop());
 
         }
-
+        String test = "";
         return post;
 
     }
