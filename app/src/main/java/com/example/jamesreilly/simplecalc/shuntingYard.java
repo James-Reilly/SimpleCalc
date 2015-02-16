@@ -48,7 +48,13 @@ public class shuntingYard {
 
         while(st.hasMoreTokens()){
             String currentSt = st.nextToken();
-            Character curChar = currentSt.charAt(0);
+            Character curChar;
+            if (currentSt.length() > 1){
+                curChar = currentSt.charAt(1);
+            }
+            else{
+                curChar = currentSt.charAt(0);
+            }
             token = getToken(curChar);
             if(token == Precedence.operand){
                 post.add(currentSt);

@@ -18,6 +18,7 @@ public class Calculator extends Activity {
     private String myInt = "";
     private String operators = "+ - * / ^";
     private String strAnswer = "";
+    private Boolean error = false;
 
 
 
@@ -36,10 +37,12 @@ public class Calculator extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.calculator, menu);
         return true;
-    }
-    public void onButtonClick(View v) {
+    }public void onButtonClick(View v) {
         // previously invisible view
-
+        if(error == true){
+            displayFunction="";
+            error=false;
+        }
 
 
         switch (v.getId()) {
@@ -135,6 +138,18 @@ public class Calculator extends Activity {
                 myInt+= ".";
                 displayFunction+=".";
                 break;
+            case R.id.delete:
+                if (displayFunction.length() > 0){
+                    char op = displayFunction.charAt(displayFunction.length()-1);
+                    if (op == 'x' || op == '/' || op == '+' || op == '-' || op == '(' || op == ')' || op == '^'){
+                        myInt = myInt.substring(0, myInt.length()-3);
+                    }else{
+                        myInt = myInt.substring(0,myInt.length()-1);
+                    }
+                    displayFunction = displayFunction.substring(0,displayFunction.length()-1);
+                }
+
+                break;
             case R.id.imageButtoneq:
 
 
@@ -170,6 +185,7 @@ public class Calculator extends Activity {
                     strAnswer = answer.pop().toString();
                 } catch(Exception e){
                     strAnswer = "ERROR";
+                    error = true;
                 }
                 finally {
                     //Floating Point Check
@@ -182,6 +198,7 @@ public class Calculator extends Activity {
                     displayFunction=strAnswer;
                     if (strAnswer.equals("ERROR")){
                         myInt = "";
+                        error = true;
                     }
                     else{
 
@@ -194,6 +211,7 @@ public class Calculator extends Activity {
             case R.id.imageButtonClr:
                 displayFunction = "";
                 myInt="";
+                error = false;
 
                 break;
 
@@ -202,6 +220,7 @@ public class Calculator extends Activity {
                 findViewById(R.id.textView);
         myTextView.setText(displayFunction);
     }
+
 
 
 
